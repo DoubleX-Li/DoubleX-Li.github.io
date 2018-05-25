@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="Double X Li" />
+
+
+
+<meta name="description" content="记录一次微博粉丝信息爬取。 项目地址：https://github.com/DoubleX-Li/weibo.git">
+<meta name="keywords" content="python,scrapy,微博">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一个微博粉丝信息爬虫">
+<meta property="og:url" content="https://blog.doublex.li/2017/03/14/一个微博粉丝信息爬虫/index.html">
+<meta property="og:site_name" content="Li&#39;s Blog">
+<meta property="og:description" content="记录一次微博粉丝信息爬取。 项目地址：https://github.com/DoubleX-Li/weibo.git">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://ooo.0o0.ooo/2017/03/14/58c7ca88482cd.png">
+<meta property="og:image" content="https://ooo.0o0.ooo/2017/03/14/58c7d41c8e507.png">
+<meta property="og:image" content="https://ooo.0o0.ooo/2017/03/14/58c7d613ac5d1.png">
+<meta property="og:image" content="https://ooo.0o0.ooo/2017/03/14/58c7dc7f96b49.png">
+<meta property="og:image" content="https://ooo.0o0.ooo/2017/03/14/58c7ddc2ed700.png">
+<meta property="og:image" content="https://ooo.0o0.ooo/2017/03/14/58c7deb00678b.png">
+<meta property="og:image" content="https://ooo.0o0.ooo/2017/03/14/58c7e10d0a24f.png">
+<meta property="og:image" content="https://ooo.0o0.ooo/2017/03/14/58c7e2e9b3efd.png">
+<meta property="og:image" content="https://ooo.0o0.ooo/2017/03/14/58c7e54113335.png">
+<meta property="og:image" content="https://ooo.0o0.ooo/2017/03/14/58c7ff1a0bb63.png">
+<meta property="og:updated_time" content="2017-03-17T16:13:52.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一个微博粉丝信息爬虫">
+<meta name="twitter:description" content="记录一次微博粉丝信息爬取。 项目地址：https://github.com/DoubleX-Li/weibo.git">
+<meta name="twitter:image" content="https://ooo.0o0.ooo/2017/03/14/58c7ca88482cd.png">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="Li&#39;s Blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>一个微博粉丝信息爬虫 | Li&#39;s Blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.png" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">Double X Li</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">What have you done today to make you feel proud?</p>
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:me@doublex.li" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="https://github.com/DoubleX-Li" title="GitHub"></a>
+                            
+                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Flask/">Flask</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo/">Hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IntelliJ-IDEA/">IntelliJ IDEA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kcptun/">Kcptun</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQLAlchemy/">SQLAlchemy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shadowsocks/">Shadowsocks</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Tomcat/">Tomcat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UWP/">UWP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/VPS/">VPS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WTForms/">WTForms</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hash/">hash</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/moment-js/">moment.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pip/">pip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/powershell/">powershell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tar/">tar</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/upgrade/">upgrade</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/virtualbox/">virtualbox</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xor/">xor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/微博/">微博</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/扩展/">扩展</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/端口/">端口</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/路径太长/">路径太长</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://moxfive.xyz/">MOxFIVE</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">Li</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">Double X Li</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/avatar.png" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">Double X Li</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">What have you done today to make you feel proud?</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:me@doublex.li" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/DoubleX-Li" title="GitHub"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-一个微博粉丝信息爬虫" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/03/14/一个微博粉丝信息爬虫/" class="article-date">
+      <time datetime="2017-03-15T02:48:27.000Z" itemprop="datePublished">03/14/2017</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      一个微博粉丝信息爬虫
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/微博/">微博</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>记录一次微博粉丝信息爬取。</p>
+<p>项目地址：<a href="https://github.com/DoubleX-Li/weibo.git" target="_blank" rel="noopener">https://github.com/DoubleX-Li/weibo.git</a></p>
+<a id="more"></a>
+<h1 id="失败的尝试"><a href="#失败的尝试" class="headerlink" title="失败的尝试"></a>失败的尝试</h1><p>秉承先尝试手机端页面的原则，我选择了<a href="http://weibo.cn/" target="_blank" rel="noopener">weibo.cn</a>。</p>
+<h2 id="找到粉丝页面"><a href="#找到粉丝页面" class="headerlink" title="找到粉丝页面"></a>找到粉丝页面</h2><p>接下来是要找到粉丝页面，以<a href="http://weibo.cn/1788911247" target="_blank" rel="noopener">谷大白话</a>为例。</p>
+<p><img src="https://ooo.0o0.ooo/2017/03/14/58c7ca88482cd.png" alt="1.png"></p>
+<p>可以看到<a href="http://weibo.cn/1788911247/fans" target="_blank" rel="noopener">粉丝页面</a>很明显地放在页面上。</p>
+<h2 id="解析页面结构"><a href="#解析页面结构" class="headerlink" title="解析页面结构"></a>解析页面结构</h2><p>在Developer Tools里面可以看到返回了一个简单的网页。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"c"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">table</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span> <span class="attr">valign</span>=<span class="string">"top"</span> <span class="attr">style</span>=<span class="string">"width: 52px"</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"http://weibo.cn/u/1764360474"</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"http://tva3.sinaimg.cn/crop.0.6.750.750.50/692a011ajw8fdcde1yo4gj20ku0l63zf.jpg"</span></span></span><br><span class="line"><span class="tag">                    <span class="attr">alt</span>=<span class="string">"pic"</span> /&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span> <span class="attr">valign</span>=<span class="string">"top"</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"http://weibo.cn/u/1764360474"</span>&gt;</span></span><br><span class="line">                    谭阿倩</span><br><span class="line">                <span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">br</span>/&gt;</span></span><br><span class="line">                粉丝254人</span><br><span class="line">                <span class="tag">&lt;<span class="name">br</span>/&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"http://weibo.cn/attention/add?uid=1764360474&amp;amp;rl=1&amp;amp;st=4561d5"</span>&gt;</span></span><br><span class="line">                    关注她</span><br><span class="line">                <span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"s"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">&lt;!-- 更多的table --&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"c"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">"http://weibo.cn/attention/batchadd?st=4561d5"</span> <span class="attr">method</span>=<span class="string">"post"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"rl"</span> <span class="attr">value</span>=<span class="string">"1"</span> /&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"f"</span> <span class="attr">value</span>=<span class="string">""</span> /&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"uidList"</span> <span class="attr">value</span>=<span class="string">"1764360474,6131087160,1644778123,5792666099,2608149357,1678455724,2200798573,1886160672,5856282793,2717084785"</span></span></span><br><span class="line"><span class="tag">                /&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"submit"</span> <span class="attr">value</span>=<span class="string">"关注以上这些人"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"s"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"pa"</span> <span class="attr">id</span>=<span class="string">"pagelist"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">"/1788911247/fans"</span> <span class="attr">method</span>=<span class="string">"post"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"/1788911247/fans?page=3"</span>&gt;</span></span><br><span class="line">                    下页</span><br><span class="line">                <span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">                &amp;nbsp;</span><br><span class="line">                <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"/1788911247/fans?page=1"</span>&gt;</span></span><br><span class="line">                    上页</span><br><span class="line">                <span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">                &amp;nbsp;</span><br><span class="line">                <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"/1788911247/fans"</span>&gt;</span></span><br><span class="line">                    首页</span><br><span class="line">                <span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">                &amp;nbsp;</span><br><span class="line">                <span class="tag">&lt;<span class="name">input</span> <span class="attr">name</span>=<span class="string">"mp"</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">value</span>=<span class="string">"20"</span> /&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">name</span>=<span class="string">"page"</span> <span class="attr">size</span>=<span class="string">"2"</span> <span class="attr">style</span>=<span class="string">'-wap-input-format: "*N"'</span></span></span><br><span class="line"><span class="tag">                /&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"submit"</span> <span class="attr">value</span>=<span class="string">"跳页"</span> /&gt;</span></span><br><span class="line">                &amp;nbsp;2/20页</span><br><span class="line">            <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>网页的部分源码如上所示，分析网页源码可知：</p>
+<ol>
+<li>粉丝信息在每个table标签的tr标签的第二个td标签中；</li>
+<li>下一页链接在id为pagelist的div下的form标签下的div标签下的第一个a标签中。</li>
+</ol>
+<p>由以上信息可以很容易地写出解析粉丝信息的程序：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">parse_followers</span><span class="params">(self, response)</span>:</span></span><br><span class="line">	fans = response.xpath(<span class="string">'//table/tbody/tr/td[2]/a[1]'</span>)</span><br><span class="line">	<span class="keyword">for</span> fan <span class="keyword">in</span> fans:</span><br><span class="line">		print(fan.xpath(<span class="string">'/text()'</span>)[<span class="number">0</span>].extract())</span><br><span class="line">		print(fan.xpath(<span class="string">'/@href'</span>)[<span class="number">0</span>].extract())</span><br><span class="line"></span><br><span class="line">	next_page = response.xpath(<span class="string">'//div[@id="pagelist"]/form/div/a/@href'</span>)[<span class="number">0</span>].extract()</span><br><span class="line">	<span class="keyword">yield</span> Request(</span><br><span class="line">		url=<span class="string">'http://weibo.cn/1788911247/fans?&#123;0&#125;'</span>.format(next_page),</span><br><span class="line">		headers=self.cn_headers,</span><br><span class="line">		callback=self.parse_followers</span><br><span class="line">	)</span><br></pre></td></tr></table></figure>
+<h2 id="模拟登录"><a href="#模拟登录" class="headerlink" title="模拟登录"></a>模拟登录</h2><p>weibo.cn的<a href="https://login.weibo.cn/?" target="_blank" rel="noopener">登录页面</a>如下图所示：</p>
+<p><img src="https://ooo.0o0.ooo/2017/03/14/58c7d41c8e507.png" alt="2.png"></p>
+<p>登录页面的部分源码如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">"?rand=1242851600&amp;amp;backURL=http%3A%2F%2Fweibo.cn&amp;amp;backTitle=%E6%89%8B%E6%9C%BA%E6%96%B0%E6%B5%AA%E7%BD%91&amp;amp;vt=4"</span></span></span><br><span class="line"><span class="tag"><span class="attr">method</span>=<span class="string">"post"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">        手机号/电子邮箱/会员帐号:</span><br><span class="line">        <span class="tag">&lt;<span class="name">br</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">name</span>=<span class="string">"mobile"</span> <span class="attr">size</span>=<span class="string">"30"</span> <span class="attr">value</span>=<span class="string">""</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">br</span>/&gt;</span></span><br><span class="line">        密码:(</span><br><span class="line">        <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"/login/?backURL=http%3A%2F%2Fweibo.cn&amp;amp;backTitle=%E6%89%8B%E6%9C%BA%E6%96%B0%E6%B5%AA%E7%BD%91&amp;amp;vt=4&amp;amp;pt=1"</span>&gt;</span></span><br><span class="line">            使用明文密码</span><br><span class="line">        <span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">        )</span><br><span class="line">        <span class="tag">&lt;<span class="name">br</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"password"</span> <span class="attr">name</span>=<span class="string">"password_1133"</span> <span class="attr">size</span>=<span class="string">"30"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">br</span>/&gt;</span></span><br><span class="line">        请输入图片中的字符:</span><br><span class="line">        <span class="tag">&lt;<span class="name">br</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"http://weibo.cn/interface/f/ttt/captcha/show.php?cpt=2_f78c59f514b82660"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">alt</span>=<span class="string">"请打开图片显示"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">br</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">name</span>=<span class="string">"code"</span> <span class="attr">size</span>=<span class="string">"8"</span> <span class="attr">value</span>=<span class="string">""</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">br</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"checkbox"</span> <span class="attr">name</span>=<span class="string">"remember"</span> <span class="attr">checked</span>=<span class="string">"checked"</span> /&gt;</span></span><br><span class="line">        记住登录状态，需支持并打开手机的cookie功能。</span><br><span class="line">        <span class="tag">&lt;<span class="name">br</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"backURL"</span> <span class="attr">value</span>=<span class="string">"http%3A%2F%2Fweibo.cn"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"backTitle"</span> <span class="attr">value</span>=<span class="string">"手机新浪网"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"tryCount"</span> <span class="attr">value</span>=<span class="string">""</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"vk"</span> <span class="attr">value</span>=<span class="string">"3255_00c0_1814994306"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"capId"</span> <span class="attr">value</span>=<span class="string">"2_f78c59f514b82660"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"submit"</span> <span class="attr">name</span>=<span class="string">"submit"</span> <span class="attr">value</span>=<span class="string">"登录"</span> /&gt;</span></span><br><span class="line">        &amp;nbsp;</span><br><span class="line">        <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"http://weibo.cn/reg/forgetpwd?backURL=http%3A%2F%2Fweibo.cn&amp;amp;backTitle=%E6%89%8B%E6%9C%BA%E6%96%B0%E6%B5%AA%E7%BD%91&amp;amp;vt=4"</span>&gt;</span></span><br><span class="line">            忘记密码</span><br><span class="line">        <span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">br</span>/&gt;</span></span><br><span class="line">        小提示：</span><br><span class="line">        <span class="tag">&lt;<span class="name">br</span>/&gt;</span></span><br><span class="line">        1、登录成功后保存任意页面为书签，下次通过书签访问，也可免去登录过程。</span><br><span class="line">        <span class="tag">&lt;<span class="name">br</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">span</span> <span class="attr">style</span>=<span class="string">"color:red"</span>&gt;</span></span><br><span class="line">            2、请不要直接通过手机浏览器的发送地址功能将登录后的页面地址发送给朋友，以免泄露个人信息及密码。</span><br><span class="line">        <span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">br</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">img</span> <span class="attr">style</span>=<span class="string">"display:none"</span> <span class="attr">src</span>=<span class="string">"http://218.206.86.254/2008/match/c.gif?f=wap_reg"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">alt</span>=<span class="string">""</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>直接点击登录可以在Developer Tools中看到发送post请求时需要传递的参数。</p>
+<p>其中获取验证码的地址如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://weibo.cn/interface/f/ttt/captcha/show.php?cpt=2_f78c59f514b82660</span><br></pre></td></tr></table></figure>
+<p>这个<code>2_f78c59f514b82660</code>在网页源码中的</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"capId"</span> <span class="attr">value</span>=<span class="string">"2_f78c59f514b82660"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这一行</p>
+<p>Developer Tools中Form Data的部分如下：</p>
+<p><img src="https://ooo.0o0.ooo/2017/03/14/58c7d613ac5d1.png" alt="3.png"></p>
+<p>可以看到需要传递的value有<code>backURL</code>、<code>backTitle</code>、<code>tryCount</code>、<code>vk</code>、<code>capId</code>、<code>submit</code>。</p>
+<p>而且，key部分的<code>password_1133</code>也是从网页源码中的</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"password"</span> <span class="attr">name</span>=<span class="string">"password_1133"</span> <span class="attr">size</span>=<span class="string">"30"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这一行获得的。</p>
+<p>至此，可以容易地写出模拟登录的程序：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_params</span><span class="params">(self, response)</span>:</span></span><br><span class="line">    logging.info(<span class="string">'get_params'</span>)</span><br><span class="line">    post_url = response.xpath(<span class="string">'/html/body/div[2]/form/@action'</span>)[<span class="number">0</span>].extract()</span><br><span class="line">    password = response.xpath(<span class="string">'//input[@type="password"]/@name'</span>)[<span class="number">0</span>].extract()</span><br><span class="line">    backURL = response.xpath(<span class="string">'//input[@name="backURL"]/@value'</span>)[<span class="number">0</span>].extract()</span><br><span class="line">    backTitle = response.xpath(<span class="string">'//input[@name="backTitle"]/@value'</span>)[<span class="number">0</span>].extract()</span><br><span class="line">    tryCount = response.xpath(<span class="string">'//input[@name="tryCount"]/@value'</span>)[<span class="number">0</span>].extract()</span><br><span class="line">    vk = response.xpath(<span class="string">'//input[@name="vk"]/@value'</span>)[<span class="number">0</span>].extract()</span><br><span class="line">    capId = response.xpath(<span class="string">'//input[@name="capId"]/@value'</span>)[<span class="number">0</span>].extract()</span><br><span class="line"></span><br><span class="line">    self.params = (post_url, password, backURL, backTitle, tryCount, vk, capId)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">request_captcha</span><span class="params">(self, response)</span>:</span></span><br><span class="line">    logging.info(<span class="string">'request_captcha'</span>)</span><br><span class="line">    self.get_params(response)</span><br><span class="line">    capId = self.params[<span class="number">6</span>]</span><br><span class="line">    <span class="comment"># 获取验证码地址</span></span><br><span class="line">    cha_url = <span class="string">"http://weibo.cn/interface/f/ttt/captcha/show.php?cpt=&#123;0&#125;"</span>.format(capId)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 准备下载验证码</span></span><br><span class="line">    <span class="keyword">yield</span> Request(</span><br><span class="line">        url=cha_url,</span><br><span class="line">        headers=self.cn_headers,</span><br><span class="line">        meta=&#123;</span><br><span class="line">            <span class="string">'cookiejar'</span>: response.meta[<span class="string">'cookiejar'</span>],</span><br><span class="line">        &#125;,</span><br><span class="line">        callback=self.download_captcha</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">download_captcha</span><span class="params">(self, response)</span>:</span></span><br><span class="line">    logging.info(<span class="string">'download_captcha'</span>)</span><br><span class="line">    <span class="comment"># 下载验证码</span></span><br><span class="line">    <span class="keyword">with</span> open(<span class="string">'captcha.gif'</span>, <span class="string">'wb'</span>) <span class="keyword">as</span> fp:</span><br><span class="line">        fp.write(response.body)</span><br><span class="line">    <span class="comment"># 用软件打开验证码图片</span></span><br><span class="line">    os.system(<span class="string">'start captcha.gif'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 输入验证码</span></span><br><span class="line">    print(<span class="string">'请输入验证码: '</span>)</span><br><span class="line">    captcha = input()</span><br><span class="line"></span><br><span class="line">    post_url, password, backURL, backTitle, tryCount, vk, capId = self.params</span><br><span class="line"></span><br><span class="line">    <span class="keyword">yield</span> FormRequest(</span><br><span class="line">        url=<span class="string">'https://login.weibo.cn/login/&#123;0&#125;'</span>.format(post_url),</span><br><span class="line">        headers=self.headers,</span><br><span class="line">        formdata=&#123;</span><br><span class="line">            <span class="string">'mobile'</span>: <span class="string">'your_telephone_number'</span>,</span><br><span class="line">            password: <span class="string">'your_password'</span>,</span><br><span class="line">            <span class="string">'code'</span>: captcha,</span><br><span class="line">            <span class="string">'remember'</span>: <span class="string">'on'</span>,</span><br><span class="line">            <span class="string">'backURL'</span>: backURL,</span><br><span class="line">            <span class="string">'backTitle'</span>: backTitle,</span><br><span class="line">            <span class="string">'tryCount'</span>: tryCount,</span><br><span class="line">            <span class="string">'vk'</span>: vk,</span><br><span class="line">            <span class="string">'capId'</span>: capId,</span><br><span class="line">            <span class="string">'submit'</span>: <span class="string">'登录'</span></span><br><span class="line">        &#125;,</span><br><span class="line">        meta=&#123;</span><br><span class="line">            <span class="string">'cookiejar'</span>: response.meta[<span class="string">'cookiejar'</span>]</span><br><span class="line">        &#125;,</span><br><span class="line">        callback=self.parse_followers</span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
+<p>然后，我满心欢喜地运行了我的程序。然而，出现了404。</p>
+<p>重复运行程序几次之后，我尝试在浏览器中手动登录。</p>
+<p>此时我发现<span style="color:red">网页版也不能登录！</span></p>
+<p>大概是微博启用了统一登录认证的原因，weibo.cn的登录功能已经失效。= =</p>
+<h1 id="再次尝试"><a href="#再次尝试" class="headerlink" title="再次尝试"></a>再次尝试</h1><p>我把目标换到了<a href="http://m.weibo.cn/" target="_blank" rel="noopener">m.weibo.cn</a>。</p>
+<p>经过了上面的惨痛教训，首先要解决登录问题。</p>
+<h2 id="登录"><a href="#登录" class="headerlink" title="登录"></a>登录</h2><p><a href="http://m.weibo.cn/" target="_blank" rel="noopener">m.weibo.cn</a>有滑动验证，暂时不知道要怎么解决。</p>
+<p>先尝试直接传递cookie。</p>
+<p>构造headers</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">headers = &#123;</span><br><span class="line">        <span class="string">"Accept"</span>: <span class="string">"application/json, text/plain, */*"</span>,</span><br><span class="line">        <span class="string">"Accept-Encoding"</span>: <span class="string">"gzip, deflate, sdch, br"</span>,</span><br><span class="line">        <span class="string">"Accept-Language"</span>: <span class="string">"zh-CN,zh;q=0.8,en;q=0.6"</span>,</span><br><span class="line">        <span class="string">"Cookie"</span>: cookie,</span><br><span class="line">        <span class="string">"Connection"</span>: <span class="string">"keep-alive"</span>,</span><br><span class="line">        <span class="string">"Host"</span>: <span class="string">"m.weibo.cn"</span>,</span><br><span class="line">        <span class="string">"Upgrade-Insecure-Requests"</span>: <span class="string">"1"</span>,</span><br><span class="line">        <span class="string">"User-Agent"</span>: <span class="string">"Mozilla/5.0 (Linux; Android 5.1.1; Nexus 6 Build/LYZ28E) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Mobile Safari/537.36"</span>,</span><br><span class="line">        <span class="string">"X-Requested-With"</span>: <span class="string">"XMLHttpRequest"</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="找到粉丝页面-1"><a href="#找到粉丝页面-1" class="headerlink" title="找到粉丝页面"></a>找到粉丝页面</h2><p>接着，要找到粉丝页面。</p>
+<p>然而，<a href="http://m.weibo.cn/u/1788911247?uid=1788911247" target="_blank" rel="noopener">谷大白话的页面</a>上<span style="color:red">没有可以进入的粉丝页面！</span></p>
+<p><img src="https://ooo.0o0.ooo/2017/03/14/58c7dc7f96b49.png" alt="4.png"></p>
+<p>主页中<span style="color:red">也找不到可以进入的粉丝页面！</span></p>
+<p>难道<a href="http://m.weibo.cn" target="_blank" rel="noopener">m.weibo.cn</a>不能查看他人的粉丝？从现在的情况来看新浪没有提供查看他人粉丝的页面。</p>
+<p>但是，经过一番折腾，我发现查看自己的粉丝的页面地址如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://m.weibo.cn/p/second?containerid=100505&#123;your_uid&#125;_-_FANS</span><br></pre></td></tr></table></figure>
+<p>我尝试将其它的uid代入上面的地址，果然</p>
+<p><img src="https://ooo.0o0.ooo/2017/03/14/58c7ddc2ed700.png" alt="5.png"></p>
+<p>还是有方法能够看到他人的粉丝。</p>
+<p>接着对页面进行分析</p>
+<p><img src="https://ooo.0o0.ooo/2017/03/14/58c7deb00678b.png" alt="6.png"></p>
+<p>我注意到这里有两个类型是<code>xhr</code>的文件</p>
+<p>其中第一个的地址是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://m.weibo.cn/container/getSecond?containerid=1005051669282904_-_FOLLOWERS</span><br></pre></td></tr></table></figure>
+<p>第二个的地址是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://m.weibo.cn/container/getSecond?containerid=1005051669282904_-_FOLLOWERS&amp;page=2</span><br></pre></td></tr></table></figure>
+<p>打开第一个文件，部分内容如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"ok"</span>: <span class="number">1</span>, </span><br><span class="line">    <span class="attr">"msg"</span>: <span class="string">""</span>, </span><br><span class="line">    <span class="attr">"title"</span>: <span class="string">"关注"</span>, </span><br><span class="line">    <span class="attr">"card_type_name"</span>: <span class="string">"关注"</span>, </span><br><span class="line">    <span class="attr">"count"</span>: <span class="number">116</span>, </span><br><span class="line">    <span class="attr">"maxPage"</span>: <span class="number">12</span>, </span><br><span class="line">    <span class="attr">"type"</span>: <span class="string">"pageuserlist"</span>, </span><br><span class="line">    <span class="attr">"cards"</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="attr">"card_type"</span>: <span class="number">10</span>, </span><br><span class="line">            <span class="attr">"user"</span>: &#123;</span><br><span class="line">                <span class="attr">"id"</span>: <span class="number">2142168143</span>, </span><br><span class="line">                <span class="attr">"screen_name"</span>: <span class="string">"全球健身中心"</span>, </span><br><span class="line">                <span class="attr">"profile_image_url"</span>: <span class="string">"http://tva3.sinaimg.cn/crop.0.2.1242.1242.180/7faee44fjw8f82cyhlfs0j20yi0ym40e.jpg"</span>, </span><br><span class="line">                <span class="attr">"profile_url"</span>: <span class="string">"http://m.weibo.cn/u/2142168143?uid=2142168143&amp;luicode=10000012&amp;lfid=1005051669282904_-_FOLLOWERS"</span>, </span><br><span class="line">                <span class="attr">"statuses_count"</span>: <span class="number">34184</span>, </span><br><span class="line">                <span class="attr">"verified"</span>: <span class="literal">true</span>, </span><br><span class="line">                <span class="attr">"verified_type"</span>: <span class="number">0</span>, </span><br><span class="line">                <span class="attr">"verified_type_ext"</span>: <span class="number">1</span>, </span><br><span class="line">                <span class="attr">"verified_reason"</span>: <span class="string">"优秀健身资讯博主 "</span>, </span><br><span class="line">                <span class="attr">"description"</span>: <span class="string">"最大最全的健身微博，来自中日韩欧美等最热门的健身教程，加上专业的教练指导，总有一款适合你！商务洽谈QQ：2851661283，邮箱：vvstar@inmyshow.com"</span>, </span><br><span class="line">                <span class="attr">"gender"</span>: <span class="string">"f"</span>, </span><br><span class="line">                <span class="attr">"mbtype"</span>: <span class="number">12</span>, </span><br><span class="line">                <span class="attr">"urank"</span>: <span class="number">42</span>, </span><br><span class="line">                <span class="attr">"mbrank"</span>: <span class="number">6</span>, </span><br><span class="line">                <span class="attr">"follow_me"</span>: <span class="literal">false</span>, </span><br><span class="line">                <span class="attr">"following"</span>: <span class="literal">false</span>, </span><br><span class="line">                <span class="attr">"followers_count"</span>: <span class="number">11532193</span>, </span><br><span class="line">                <span class="attr">"follow_count"</span>: <span class="number">441</span>, </span><br><span class="line">                <span class="attr">"cover_image_phone"</span>: <span class="string">"http://ww3.sinaimg.cn/crop.0.0.640.640.640/7faee44fgw1f82ck0dmrmj20yi0yh0vb.jpg"</span>, </span><br><span class="line">                <span class="attr">"desc1"</span>: <span class="literal">null</span>, </span><br><span class="line">                <span class="attr">"desc2"</span>: <span class="literal">null</span></span><br><span class="line">            &#125;, </span><br><span class="line">            <span class="attr">"scheme"</span>: <span class="string">"http://m.weibo.cn/u/2142168143?uid=2142168143&amp;luicode=10000012&amp;lfid=1005051669282904_-_FOLLOWERS"</span>, </span><br><span class="line">            <span class="attr">"desc1"</span>: <span class="string">"最大最全的健身微博，来自中日韩欧美等最热门的健身教程，加上专业的教练指导，总有一款适合你！商务洽谈QQ：2851661283，邮箱：vvstar@inmyshow.com"</span>, </span><br><span class="line">            <span class="attr">"desc2"</span>: <span class="string">""</span></span><br><span class="line">        &#125;, </span><br><span class="line">        ...</span><br><span class="line">    ], </span><br><span class="line">    <span class="attr">"cardlistInfo"</span>: &#123;</span><br><span class="line">        <span class="attr">"containerid"</span>: <span class="string">"1005051669282904_-_FOLLOWERS"</span>, </span><br><span class="line">        <span class="attr">"title"</span>: <span class="literal">null</span>, </span><br><span class="line">        <span class="attr">"page"</span>: <span class="number">2</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，cards对应的value是一个list，其中的多个dict保存了follower的信息。</p>
+<p>cardlistInfo对应的value是一个dict，其中page对应的value保存了下一页的页码。</p>
+<p>接着向下滚动页面</p>
+<p><img src="https://ooo.0o0.ooo/2017/03/14/58c7e10d0a24f.png" alt="7.png"></p>
+<p>可以看到出现了更多的<code>xhr</code>文件。</p>
+<p>至此，可以得到获取某人粉丝的步骤：</p>
+<ol>
+<li>访问<code>http://m.weibo.cn/container/getSecond?containerid=100505{uid}_-_FOLLOWERS</code>页面</li>
+<li>从当前页面中解析若干个用户信息；</li>
+<li>在当前页面找到下一页的地址并访问；</li>
+<li>重复步骤2-3直到没有更多的用户信息。</li>
+</ol>
+<p>至此，可以容易地写出获取某人粉丝的程序：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">parse_followers</span><span class="params">(self, response)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    解析关注者信息</span></span><br><span class="line"><span class="string">    :param response:</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    logging.debug(<span class="string">'parse_followers'</span>)</span><br><span class="line">    jsonObj = json.loads(response.text)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 解析cards中朋友信息</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        cards = jsonObj.get(<span class="string">'cards'</span>)</span><br><span class="line">        <span class="keyword">for</span> card <span class="keyword">in</span> cards:</span><br><span class="line">            uid = card.get(<span class="string">'user'</span>).get(<span class="string">'id'</span>)</span><br><span class="line">            logging.info(card.get(<span class="string">'user'</span>).get(<span class="string">'screen_name'</span>))</span><br><span class="line">            <span class="keyword">yield</span> Request(</span><br><span class="line">                url=<span class="string">'&#123;0&#125;?containerid=230283&#123;1&#125;'</span>.format(self.getIndex, uid),</span><br><span class="line">                headers=self.headers,</span><br><span class="line">                callback=self.parse_person</span><br><span class="line">            )</span><br><span class="line">    <span class="comment"># 没有粉丝</span></span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        msg = jsonObj[<span class="string">'msg'</span>]</span><br><span class="line">        print(msg)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 解析下一页中的朋友信息</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        next_page = jsonObj[<span class="string">'cardlistInfo'</span>][<span class="string">'page'</span>]</span><br><span class="line">        <span class="keyword">yield</span> Request(</span><br><span class="line">            url=<span class="string">'&#123;0&#125;?containerid=100505&#123;1&#125;_-_FOLLOWERS&amp;page=&#123;2&#125;'</span>.format(self.getSecond, self.uid, next_page),</span><br><span class="line">            headers=self.headers,</span><br><span class="line">            callback=self.parse_followers</span><br><span class="line">        )</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        print(<span class="string">'没有了'</span>)</span><br><span class="line">        <span class="keyword">return</span></span><br></pre></td></tr></table></figure>
+<h2 id="找到用户详细资料页面"><a href="#找到用户详细资料页面" class="headerlink" title="找到用户详细资料页面"></a>找到用户详细资料页面</h2><p>我感兴趣的用户资料在用户的<a href="http://m.weibo.cn/p/index?containerid=2302831195054531_-_INFO" target="_blank" rel="noopener">个人主页</a>，如下图</p>
+<p><img src="https://ooo.0o0.ooo/2017/03/14/58c7e2e9b3efd.png" alt="8.png"></p>
+<p>在Developer Tools中可以看到</p>
+<p><img src="https://ooo.0o0.ooo/2017/03/14/58c7e54113335.png" alt="9.png"></p>
+<p>有一个<code>xhr</code>文件，地址是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://m.weibo.cn/container/getIndex?containerid=2302831195054531_-_INFO</span><br></pre></td></tr></table></figure>
+<p>内容是</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"cardlistInfo"</span>: &#123;</span><br><span class="line">        <span class="attr">"v_p"</span>: <span class="string">"42"</span>, </span><br><span class="line">        <span class="attr">"cardlist_title"</span>: <span class="string">"个人主页"</span>, </span><br><span class="line">        <span class="attr">"desc"</span>: <span class="string">""</span>, </span><br><span class="line">        <span class="attr">"show_style"</span>: <span class="number">1</span>, </span><br><span class="line">        <span class="attr">"containerid"</span>: <span class="string">"2302831195054531_-_INFO"</span>, </span><br><span class="line">        <span class="attr">"cardlist_menus"</span>: [</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="attr">"type"</span>: <span class="string">"button_menus_refresh"</span>, </span><br><span class="line">                <span class="attr">"name"</span>: <span class="string">"刷新"</span></span><br><span class="line">            &#125;, </span><br><span class="line">            &#123;</span><br><span class="line">                <span class="attr">"type"</span>: <span class="string">"gohome"</span>, </span><br><span class="line">                <span class="attr">"name"</span>: <span class="string">"返回首页"</span>, </span><br><span class="line">                <span class="attr">"params"</span>: &#123;</span><br><span class="line">                    <span class="attr">"scheme"</span>: <span class="string">"sinaweibo://gotohome"</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        ], </span><br><span class="line">        <span class="attr">"page"</span>: <span class="literal">null</span></span><br><span class="line">    &#125;, </span><br><span class="line">    <span class="attr">"cards"</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="attr">"card_type"</span>: <span class="number">11</span>, </span><br><span class="line">            <span class="attr">"show_type"</span>: <span class="number">2</span>, </span><br><span class="line">            <span class="attr">"card_group"</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">"card_type"</span>: <span class="number">41</span>, </span><br><span class="line">                    <span class="attr">"item_name"</span>: <span class="string">"昵称"</span>, </span><br><span class="line">                    <span class="attr">"item_content"</span>: <span class="string">"博物杂志"</span>, </span><br><span class="line">                    <span class="attr">"openurl"</span>: <span class="string">""</span></span><br><span class="line">                &#125;, </span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">"card_type"</span>: <span class="number">41</span>, </span><br><span class="line">                    <span class="attr">"item_type"</span>: <span class="string">"set_remark"</span>, </span><br><span class="line">                    <span class="attr">"uid"</span>: <span class="string">"1195054531"</span>, </span><br><span class="line">                    <span class="attr">"item_name"</span>: <span class="string">"Tap to set alias"</span>, </span><br><span class="line">                    <span class="attr">"item_content"</span>: <span class="string">""</span>, </span><br><span class="line">                    <span class="attr">"display_arrow"</span>: <span class="number">1</span>, </span><br><span class="line">                    <span class="attr">"openurl"</span>: <span class="string">""</span></span><br><span class="line">                &#125;, </span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">"card_type"</span>: <span class="number">41</span>, </span><br><span class="line">                    <span class="attr">"item_content"</span>: <span class="string">"博物杂志官方微博"</span>, </span><br><span class="line">                    <span class="attr">"item_type"</span>: <span class="string">"verify_blue"</span>, </span><br><span class="line">                    <span class="attr">"itemid"</span>: <span class="string">"2302831195054531_-_WEIBO_INDEX_PROFILE_VERFIED_CARD"</span>, </span><br><span class="line">                    <span class="attr">"actionlog"</span>: &#123;</span><br><span class="line">                        <span class="attr">"act_code"</span>: <span class="string">"594"</span>, </span><br><span class="line">                        <span class="attr">"uicode"</span>: <span class="string">"10000198"</span>, </span><br><span class="line">                        <span class="attr">"oid"</span>: <span class="string">"http://verified.weibo.com/verify"</span>, </span><br><span class="line">                        <span class="attr">"fid"</span>: <span class="string">"2302831195054531"</span>, </span><br><span class="line">                        <span class="attr">"cardid"</span>: <span class="string">"230283_-_WEIBO_INDEX_PROFILE_VERFIED_CARD"</span>, </span><br><span class="line">                        <span class="attr">"ext"</span>: <span class="string">"uid:1195054531|ptype:0"</span></span><br><span class="line">                    &#125;, </span><br><span class="line">                    <span class="attr">"openurl"</span>: <span class="string">""</span></span><br><span class="line">                &#125;, </span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">"card_type"</span>: <span class="number">41</span>, </span><br><span class="line">                    <span class="attr">"item_name"</span>: <span class="string">"标签"</span>, </span><br><span class="line">                    <span class="attr">"item_content"</span>: <span class="string">"搞笑"</span>, </span><br><span class="line">                    <span class="attr">"display_arrow"</span>: <span class="number">0</span>, </span><br><span class="line">                    <span class="attr">"scheme"</span>: <span class="string">""</span>, </span><br><span class="line">                    <span class="attr">"actionlog"</span>: &#123;</span><br><span class="line">                        <span class="attr">"act_code"</span>: <span class="string">"594"</span>, </span><br><span class="line">                        <span class="attr">"uicode"</span>: <span class="string">"10000198"</span>, </span><br><span class="line">                        <span class="attr">"oid"</span>: <span class="string">""</span>, </span><br><span class="line">                        <span class="attr">"fid"</span>: <span class="string">"2302831195054531"</span>, </span><br><span class="line">                        <span class="attr">"cardid"</span>: <span class="string">"230283_-_WEIBO_INDEX_PROFILE_CTAG"</span>, </span><br><span class="line">                        <span class="attr">"ext"</span>: <span class="string">"uid:1195054531|ptype:0"</span></span><br><span class="line">                    &#125;, </span><br><span class="line">                    <span class="attr">"openurl"</span>: <span class="string">""</span></span><br><span class="line">                &#125;, </span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">"card_type"</span>: <span class="number">41</span>, </span><br><span class="line">                    <span class="attr">"item_name"</span>: <span class="string">"所在地"</span>, </span><br><span class="line">                    <span class="attr">"item_content"</span>: <span class="string">"北京 朝阳区"</span>, </span><br><span class="line">                    <span class="attr">"openurl"</span>: <span class="string">""</span></span><br><span class="line">                &#125;, </span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">"card_type"</span>: <span class="number">41</span>, </span><br><span class="line">                    <span class="attr">"item_name"</span>: <span class="string">"简介"</span>, </span><br><span class="line">                    <span class="attr">"item_content"</span>: <span class="string">"我是博物学科普杂志，买杂志去报刊亭、邮局、天猫“中国国家地理旗舰店”，买博物文创去淘宝“博物小馆”"</span>, </span><br><span class="line">                    <span class="attr">"openurl"</span>: <span class="string">""</span></span><br><span class="line">                &#125;</span><br><span class="line">            ], </span><br><span class="line">            <span class="attr">"openurl"</span>: <span class="string">""</span></span><br><span class="line">        &#125;, </span><br><span class="line">        ...</span><br><span class="line">    ], </span><br><span class="line">    <span class="attr">"ok"</span>: <span class="number">1</span>, </span><br><span class="line">    <span class="attr">"seeLevel"</span>: <span class="number">3</span>, </span><br><span class="line">    <span class="attr">"showAppTips"</span>: <span class="number">0</span>, </span><br><span class="line">    <span class="attr">"scheme"</span>: <span class="string">"sinaweibo://cardlist?containerid=2302831195054531_-_INFO&amp;luicode=10000011&amp;lfid=2302831195054531_-_INFO&amp;featurecode="</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，我感兴趣的信息可以从cards中解析出来。</p>
+<p>至此，可以得到获取某人详细信息的步骤：</p>
+<ol>
+<li>取得粉丝uid，访问<code>http://m.weibo.cn/container/getIndex?containerid=230283{uid}_-_INFO</code>页面；</li>
+<li>在当前页面解析cards中感兴趣的内容；</li>
+<li>重复步骤1-2，直到没有更多粉丝。</li>
+</ol>
+<p>至此，可以容易地写出获取某人详细信息的程序：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">parse_person</span><span class="params">(self, response)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    解析个人信息</span></span><br><span class="line"><span class="string">    :param response:</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    jsonObj = json.loads(response.text)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 获取信息出错</span></span><br><span class="line">    <span class="keyword">if</span> jsonObj.get(<span class="string">'msg'</span>):</span><br><span class="line">        <span class="comment"># 再次调用parse_person</span></span><br><span class="line">        <span class="keyword">yield</span> Request(</span><br><span class="line">            url=response.url,</span><br><span class="line">            headers=self.headers,</span><br><span class="line">            callback=self.parse_person</span><br><span class="line">        )</span><br><span class="line">    item = WeiboItem()</span><br><span class="line">    <span class="comment"># 从response.url中截取uid</span></span><br><span class="line">    item[<span class="string">'uid'</span>] = response.url.split(<span class="string">'_'</span>)[<span class="number">0</span>].split(<span class="string">'='</span>)[<span class="number">1</span>][<span class="number">6</span>:]</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 遍历cards</span></span><br><span class="line">    cards = jsonObj.get(<span class="string">'cards'</span>) <span class="keyword">or</span> []</span><br><span class="line">    <span class="keyword">for</span> something <span class="keyword">in</span> cards:</span><br><span class="line">        card_group = something.get(<span class="string">'card_group'</span>) <span class="keyword">or</span> []</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 遍历card_group，逐项寻找感兴趣的信息</span></span><br><span class="line">        <span class="keyword">for</span> card <span class="keyword">in</span> card_group:</span><br><span class="line">            item_name = card.get(<span class="string">'item_name'</span>)</span><br><span class="line">            <span class="comment"># logging.debug(item_name)</span></span><br><span class="line">            <span class="keyword">if</span> <span class="string">'昵称'</span> == item_name:</span><br><span class="line">                item[<span class="string">'name'</span>] = card.get(<span class="string">'item_content'</span>)</span><br><span class="line">            <span class="keyword">elif</span> <span class="string">'性别'</span> == item_name:</span><br><span class="line">                item[<span class="string">'gender'</span>] = card.get(<span class="string">'item_content'</span>)</span><br><span class="line">            <span class="keyword">elif</span> <span class="string">'所在地'</span> == item_name:</span><br><span class="line">                item[<span class="string">'location'</span>] = card.get(<span class="string">'item_content'</span>)</span><br><span class="line">            <span class="keyword">elif</span> <span class="string">'简介'</span> == item_name:</span><br><span class="line">                item[<span class="string">'intro'</span>] = card.get(<span class="string">'item_content'</span>)</span><br><span class="line">            <span class="keyword">elif</span> <span class="string">'注册时间'</span> == item_name:</span><br><span class="line">                item[<span class="string">'signin'</span>] = card.get(<span class="string">'item_content'</span>)</span><br><span class="line">            <span class="keyword">elif</span> <span class="string">'学校'</span> == item_name:</span><br><span class="line">                item[<span class="string">'school'</span>] = card.get(<span class="string">'item_content'</span>)</span><br><span class="line">            <span class="keyword">elif</span> <span class="string">'公司'</span> == item_name:</span><br><span class="line">                item[<span class="string">'company'</span>] = card.get(<span class="string">'item_content'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">yield</span> item</span><br></pre></td></tr></table></figure>
+<p><span style="color:red">由于微博限制，此方法只能获取100个左右的粉丝信息</span></p>
+<p><img src="https://ooo.0o0.ooo/2017/03/14/58c7ff1a0bb63.png" alt="10.png"></p>
+<h1 id="有待改进"><a href="#有待改进" class="headerlink" title="有待改进"></a>有待改进</h1><ul>
+<li style="list-style: none"><input type="checkbox"> 实现模拟登录</li>
+<li style="list-style: none"><input type="checkbox"> 找到能获取更多粉丝的方法</li>
+<li style="list-style: none"><input type="checkbox"> 尝试使用IP池</li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2017/03/14/一个微博粉丝信息爬虫/">一个微博粉丝信息爬虫</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">Double X Li</a></p>
+        <p><span>发布时间:</span>2017-03-14, 22:48:27</p>
+        <p><span>最后更新:</span>2017-03-17, 12:13:52</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2017/03/14/一个微博粉丝信息爬虫/" title="一个微博粉丝信息爬虫">https://blog.doublex.li/2017/03/14/一个微博粉丝信息爬虫/</a>
+            <span class="copy-path" data-clipboard-text="原文: https://blog.doublex.li/2017/03/14/一个微博粉丝信息爬虫/　　作者: Double X Li" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2017/03/18/git——从历史记录中删除文件/">
+                    git——从历史记录中删除文件
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2017/02/18/记异或的用法/">
+                    记异或的用法
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#失败的尝试"><span class="toc-number">1.</span> <span class="toc-text">失败的尝试</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#找到粉丝页面"><span class="toc-number">1.1.</span> <span class="toc-text">找到粉丝页面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解析页面结构"><span class="toc-number">1.2.</span> <span class="toc-text">解析页面结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#模拟登录"><span class="toc-number">1.3.</span> <span class="toc-text">模拟登录</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#再次尝试"><span class="toc-number">2.</span> <span class="toc-text">再次尝试</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#登录"><span class="toc-number">2.1.</span> <span class="toc-text">登录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#找到粉丝页面-1"><span class="toc-number">2.2.</span> <span class="toc-text">找到粉丝页面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#找到用户详细资料页面"><span class="toc-number">2.3.</span> <span class="toc-text">找到用户详细资料页面</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#有待改进"><span class="toc-number">3.</span> <span class="toc-text">有待改进</span></a></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"一个微博粉丝信息爬虫　| Li's Blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+        <section id="comments">
+    <style> aside.comment-bar { margin: auto 30px; }</style>
+    <div id="disqus_thread"></div>
+    <script>
+        var disqus_config = function(){
+            this.page.url = 'https://blog.doublex.li/2017/03/14/一个微博粉丝信息爬虫/';
+            this.page.identifier = '2017/03/14/一个微博粉丝信息爬虫/';
+        };
+        var loadComment = function(){
+            var d = document, s = d.createElement('script');
+            s.src = '//doublex-li.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        }
+    </script>
+    
+    <script> loadComment(); </script>
+
+</section>
+
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2017/03/18/git——从历史记录中删除文件/" title="上一篇: git——从历史记录中删除文件">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2017/02/18/记异或的用法/" title="下一篇: 记异或的用法">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/05/09/Linux磁盘空间耗尽的诡异问题/">Linux磁盘空间耗尽的诡异问题</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/13/filter-vs-list-comprehension-vs-for-loop/">filter vs list comprehension vs for loop</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/10/12/使用pyenv管理python版本/">使用pyenv管理python版本</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/24/使用ssh连接virtualbox中的Ubuntu/">使用ssh连接virtualbox中的Ubuntu</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/18/git——从历史记录中删除文件/">git——从历史记录中删除文件</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/14/一个微博粉丝信息爬虫/">一个微博粉丝信息爬虫</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/记异或的用法/">记异或的用法</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/16/FLask扩展——Flask-SQLAlchemy/">FLask扩展——Flask-SQLAlchemy</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/16/Flask扩展——Flask-WTF/">Flask扩展——Flask-WTF</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/16/Flask扩展——Flask-Moment/">Flask扩展——Flask-Moment</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/13/linux命令——tar/">linux命令——tar</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/03/pip升级所有包/">pip升级所有包</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/01/27/Kcptun配置/">Kcptun配置</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/12/03/在powershell中校验文件Hash/">在powershell中校验文件Hash</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/11/15/scrapy安装的坑/">scrapy安装的坑</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/10/Windows中删除路径太长目录及文件/">Windows中删除路径太长目录及文件</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/01/使用shadowsocks代理UWP应用/">使用shadowsocks代理UWP应用</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/11/VPS上部署Shadowsocks-锐速/">VPS上部署Shadowsocks & 锐速</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/07/22/查看占用端口的进程并终止/">查看占用端口的进程并终止</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/07/22/IntelliJ-IDEA-14集成Tomcat/">IntelliJ IDEA14集成Tomcat</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/29/Hello-Hexo/">Hello Hexo</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2015-2018 Double X Li
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题  v3.5">Yelee</a> by MOxFIVE <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" title="本站到访数"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>| </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit"  title="本页阅读量"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>

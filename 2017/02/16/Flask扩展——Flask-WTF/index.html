@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="Double X Li" />
+
+
+
+<meta name="description" content="Flask-WTF 提供了简单的 WTForms 的集成，可以把处理 Web 表单的过程变成一种愉悦的体验。">
+<meta name="keywords" content="python,Flask,扩展,WTForms">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flask扩展——Flask-WTF">
+<meta property="og:url" content="https://blog.doublex.li/2017/02/16/Flask扩展——Flask-WTF/index.html">
+<meta property="og:site_name" content="Li&#39;s Blog">
+<meta property="og:description" content="Flask-WTF 提供了简单的 WTForms 的集成，可以把处理 Web 表单的过程变成一种愉悦的体验。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://ooo.0o0.ooo/2017/02/16/58a56238257f8.png">
+<meta property="og:updated_time" content="2017-02-16T21:31:52.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Flask扩展——Flask-WTF">
+<meta name="twitter:description" content="Flask-WTF 提供了简单的 WTForms 的集成，可以把处理 Web 表单的过程变成一种愉悦的体验。">
+<meta name="twitter:image" content="https://ooo.0o0.ooo/2017/02/16/58a56238257f8.png">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="Li&#39;s Blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>Flask扩展——Flask-WTF | Li&#39;s Blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.png" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">Double X Li</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">What have you done today to make you feel proud?</p>
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:me@doublex.li" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="https://github.com/DoubleX-Li" title="GitHub"></a>
+                            
+                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Flask/">Flask</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo/">Hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IntelliJ-IDEA/">IntelliJ IDEA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kcptun/">Kcptun</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQLAlchemy/">SQLAlchemy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shadowsocks/">Shadowsocks</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Tomcat/">Tomcat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UWP/">UWP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/VPS/">VPS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WTForms/">WTForms</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hash/">hash</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/moment-js/">moment.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pip/">pip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/powershell/">powershell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tar/">tar</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/upgrade/">upgrade</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/virtualbox/">virtualbox</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xor/">xor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/微博/">微博</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/扩展/">扩展</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/端口/">端口</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/路径太长/">路径太长</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://moxfive.xyz/">MOxFIVE</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">Li</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">Double X Li</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/avatar.png" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">Double X Li</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">What have you done today to make you feel proud?</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:me@doublex.li" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/DoubleX-Li" title="GitHub"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-Flask扩展——Flask-WTF" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/02/16/Flask扩展——Flask-WTF/" class="article-date">
+      <time datetime="2017-02-16T21:30:21.000Z" itemprop="datePublished">02/16/2017</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Flask扩展——Flask-WTF
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Flask/">Flask</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/WTForms/">WTForms</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/扩展/">扩展</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p><a href="https://flask-wtf.readthedocs.io/" target="_blank" rel="noopener">Flask-WTF</a> 提供了简单的 <a href="http://wtforms.simplecodes.com/docs/" target="_blank" rel="noopener">WTForms</a> 的集成，可以把处理 Web 表单的过程变成一种愉悦的体验。 </p>
+<a id="more"></a>
+<h1 id="跨站请求伪造保护"><a href="#跨站请求伪造保护" class="headerlink" title="跨站请求伪造保护"></a>跨站请求伪造保护</h1><p><a href="https://zh.wikipedia.org/zh/%E8%B7%A8%E7%AB%99%E8%AF%B7%E6%B1%82%E4%BC%AA%E9%80%A0" target="_blank" rel="noopener">跨站请求伪造(Cross-Site Request Forgery)</a>，也被称为 <strong>one-click attack</strong> 或者 <strong>session riding</strong>，通常缩写为 <strong>CSRF</strong> 或者 <strong>XSRF</strong>， 是一种挟制用户在当前已登录的Web应用程序上执行非本意的操作的攻击方法。CSRF 利用的是网站对用户网页浏览器的信任。</p>
+<p>为了实现 CSRF 保护， Flask-WTF 需要程序设置一个密钥。 Flask-WTF 使用这个密钥生成<br>加密令牌，再用令牌验证请求中表单数据的真伪。 </p>
+<h2 id="设置密钥"><a href="#设置密钥" class="headerlink" title="设置密钥"></a>设置密钥</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">app.config[<span class="string">'SECRET_KEY'</span>] = <span class="string">'hard to guess string'</span></span><br></pre></td></tr></table></figure>
+<h1 id="表单类"><a href="#表单类" class="headerlink" title="表单类"></a>表单类</h1><p>每个 Web 表单都由一个继承自 Form 的类表示。 </p>
+<p>简单表单示例：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask.ext.wtf <span class="keyword">import</span> Form</span><br><span class="line"><span class="keyword">from</span> wtforms <span class="keyword">import</span> StringField, SubmitField</span><br><span class="line"><span class="keyword">from</span> wtforms.validators <span class="keyword">import</span> DataRequired</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NameForm</span><span class="params">(Form)</span>:</span></span><br><span class="line">    name = StringField(<span class="string">'What is your name?'</span>, validators=[DataRequired()])</span><br><span class="line">    submit = SubmitField(<span class="string">'Submit'</span>)</span><br></pre></td></tr></table></figure>
+<p>Name表单中包含一个name文本字段和一个submit提交按钮，其中name文本字段的validators是一个由验证函数组成的列表。</p>
+<blockquote>
+<p><a href="http://wtforms.readthedocs.io/en/latest/fields.html#basic-fields" target="_blank" rel="noopener">WTForms支持的HTML字段</a>如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">字段类型</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">StringField</td>
+<td style="text-align:left">文本字段</td>
+</tr>
+<tr>
+<td style="text-align:left">TextAreaField</td>
+<td style="text-align:left">多行文本字段</td>
+</tr>
+<tr>
+<td style="text-align:left">PasswordField</td>
+<td style="text-align:left">密码文本字段</td>
+</tr>
+<tr>
+<td style="text-align:left">HiddenField</td>
+<td style="text-align:left">隐藏文本字段</td>
+</tr>
+<tr>
+<td style="text-align:left">DateField</td>
+<td style="text-align:left">文本字段，值为datetime.date格式</td>
+</tr>
+<tr>
+<td style="text-align:left">DateTimeField</td>
+<td style="text-align:left">文本字段，值为datetime.datetime格式</td>
+</tr>
+<tr>
+<td style="text-align:left">IntegerField</td>
+<td style="text-align:left">文本字段，值为整数</td>
+</tr>
+<tr>
+<td style="text-align:left">DecimalField</td>
+<td style="text-align:left">文本字段，值为decimal.Decimal</td>
+</tr>
+<tr>
+<td style="text-align:left">FloatField</td>
+<td style="text-align:left">文本字段，值为浮点数</td>
+</tr>
+<tr>
+<td style="text-align:left">BooleanField</td>
+<td style="text-align:left">复选框，值为True和False</td>
+</tr>
+<tr>
+<td style="text-align:left">RadioField</td>
+<td style="text-align:left">一组单选框</td>
+</tr>
+<tr>
+<td style="text-align:left">SelectField</td>
+<td style="text-align:left">下拉列表</td>
+</tr>
+<tr>
+<td style="text-align:left">SelectMultipleField</td>
+<td style="text-align:left">下拉列表，可选择多个值</td>
+</tr>
+<tr>
+<td style="text-align:left">FileField</td>
+<td style="text-align:left">文件上传字段</td>
+</tr>
+<tr>
+<td style="text-align:left">MultipleFileField</td>
+<td style="text-align:left">允许选择多个文件的FileField</td>
+</tr>
+<tr>
+<td style="text-align:left">SubmitField</td>
+<td style="text-align:left">表单提交按钮</td>
+</tr>
+<tr>
+<td style="text-align:left">FormField</td>
+<td style="text-align:left">把表单作为字段嵌入另一个表单</td>
+</tr>
+<tr>
+<td style="text-align:left">FieldList</td>
+<td style="text-align:left">一组指定类型的字段</td>
+</tr>
+</tbody>
+</table>
+<p><a href="http://wtforms.readthedocs.io/en/latest/validators.html#built-in-validators" target="_blank" rel="noopener">WTForms</a>内建的验证函数如下：</p>
+<table>
+<thead>
+<tr>
+<th>验证函数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DataRequired</td>
+<td>确保输入的值有效（只含有空格的字符串被认为是无效的）</td>
+</tr>
+<tr>
+<td>Email</td>
+<td>验证电子邮件</td>
+</tr>
+<tr>
+<td>EqualTo</td>
+<td>比较两个字段的值；常用于要求输入两次密码进行确认的情况</td>
+</tr>
+<tr>
+<td>InputRequired</td>
+<td>确保有值输入</td>
+</tr>
+<tr>
+<td>IPAddress</td>
+<td>验证IPv4网络地址</td>
+</tr>
+<tr>
+<td>Length</td>
+<td>验证输入字符串的长度</td>
+</tr>
+<tr>
+<td>MacAddress</td>
+<td>验证MAC地址</td>
+</tr>
+<tr>
+<td>NumberRange</td>
+<td>验证输入的值在数字范围内</td>
+</tr>
+<tr>
+<td>Optional</td>
+<td>无输入值时跳过其他验证函数</td>
+</tr>
+<tr>
+<td>Regexp</td>
+<td>使用正则表达式验证输入值</td>
+</tr>
+<tr>
+<td>URL</td>
+<td>验证URL</td>
+</tr>
+<tr>
+<td>UUID</td>
+<td>验证UUID</td>
+</tr>
+<tr>
+<td>AnyOf</td>
+<td>确保输入值在可选值列表中</td>
+</tr>
+<tr>
+<td>NoneOf</td>
+<td>确保输入值不在可选列表中</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<h1 id="把表单渲染成HTML"><a href="#把表单渲染成HTML" class="headerlink" title="把表单渲染成HTML"></a>把表单渲染成HTML</h1><p>使用Flask-Bootstrap扩展，可以使用Bootstrap中预先定义好的表单样式渲染整个Flask-WTF表单。</p>
+<p><code>templates/index.html</code>文件中</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;% extends <span class="string">"base.html"</span> %&#125;</span><br><span class="line">&#123;% <span class="keyword">import</span> <span class="string">"bootstrap/wtf.html"</span> <span class="keyword">as</span> wtf %&#125;</span><br><span class="line">&#123;% block title %&#125;Flasky&#123;% endblock %&#125;</span><br><span class="line">&#123;% block page_content %&#125;</span><br><span class="line">    &lt;div class="page-header"&gt;</span><br><span class="line">        &lt;h1&gt;Hello, &#123;% if name %&#125;&#123;&#123; name &#125;&#125;&#123;% else %&#125;Stranger&#123;% endif %&#125;!&lt;/h1&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">    &#123;&#123; wtf.quick_form(form) &#125;&#125;</span><br><span class="line">&#123;% endblock %&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="在视图函数中处理表单"><a href="#在视图函数中处理表单" class="headerlink" title="在视图函数中处理表单"></a>在视图函数中处理表单</h1><p><code>app.py</code>文件中</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@app.route('/', methods=['GET', 'POST'])</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span><span class="params">()</span>:</span></span><br><span class="line">    name = <span class="keyword">None</span></span><br><span class="line">    form = NameForm()</span><br><span class="line">    <span class="keyword">if</span> form.validate_on_submit():</span><br><span class="line">        name = form.name.data</span><br><span class="line">        form.name.data = <span class="string">''</span></span><br><span class="line">    <span class="keyword">return</span> render_template(<span class="string">'index.html'</span>, form=form, name=name)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>当用户提交POST请求时，form.validate_on_submit()将会返回True。</p>
+</blockquote>
+<h1 id="提交表单后的效果"><a href="#提交表单后的效果" class="headerlink" title="提交表单后的效果"></a>提交表单后的效果</h1><p><img src="https://ooo.0o0.ooo/2017/02/16/58a56238257f8.png" alt="下载 (1).png"></p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2017/02/16/Flask扩展——Flask-WTF/">Flask扩展——Flask-WTF</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">Double X Li</a></p>
+        <p><span>发布时间:</span>2017-02-16, 16:30:21</p>
+        <p><span>最后更新:</span>2017-02-16, 16:31:52</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2017/02/16/Flask扩展——Flask-WTF/" title="Flask扩展——Flask-WTF">https://blog.doublex.li/2017/02/16/Flask扩展——Flask-WTF/</a>
+            <span class="copy-path" data-clipboard-text="原文: https://blog.doublex.li/2017/02/16/Flask扩展——Flask-WTF/　　作者: Double X Li" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2017/02/16/FLask扩展——Flask-SQLAlchemy/">
+                    FLask扩展——Flask-SQLAlchemy
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2017/02/16/Flask扩展——Flask-Moment/">
+                    Flask扩展——Flask-Moment
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#跨站请求伪造保护"><span class="toc-number">1.</span> <span class="toc-text">跨站请求伪造保护</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#设置密钥"><span class="toc-number">1.1.</span> <span class="toc-text">设置密钥</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#表单类"><span class="toc-number">2.</span> <span class="toc-text">表单类</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#把表单渲染成HTML"><span class="toc-number">3.</span> <span class="toc-text">把表单渲染成HTML</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#在视图函数中处理表单"><span class="toc-number">4.</span> <span class="toc-text">在视图函数中处理表单</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#提交表单后的效果"><span class="toc-number">5.</span> <span class="toc-text">提交表单后的效果</span></a></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"Flask扩展——Flask-WTF　| Li's Blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+        <section id="comments">
+    <style> aside.comment-bar { margin: auto 30px; }</style>
+    <div id="disqus_thread"></div>
+    <script>
+        var disqus_config = function(){
+            this.page.url = 'https://blog.doublex.li/2017/02/16/Flask扩展——Flask-WTF/';
+            this.page.identifier = '2017/02/16/Flask扩展——Flask-WTF/';
+        };
+        var loadComment = function(){
+            var d = document, s = d.createElement('script');
+            s.src = '//doublex-li.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        }
+    </script>
+    
+    <script> loadComment(); </script>
+
+</section>
+
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2017/02/16/FLask扩展——Flask-SQLAlchemy/" title="上一篇: FLask扩展——Flask-SQLAlchemy">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2017/02/16/Flask扩展——Flask-Moment/" title="下一篇: Flask扩展——Flask-Moment">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/05/09/Linux磁盘空间耗尽的诡异问题/">Linux磁盘空间耗尽的诡异问题</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/13/filter-vs-list-comprehension-vs-for-loop/">filter vs list comprehension vs for loop</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/10/12/使用pyenv管理python版本/">使用pyenv管理python版本</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/24/使用ssh连接virtualbox中的Ubuntu/">使用ssh连接virtualbox中的Ubuntu</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/18/git——从历史记录中删除文件/">git——从历史记录中删除文件</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/14/一个微博粉丝信息爬虫/">一个微博粉丝信息爬虫</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/18/记异或的用法/">记异或的用法</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/16/FLask扩展——Flask-SQLAlchemy/">FLask扩展——Flask-SQLAlchemy</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/16/Flask扩展——Flask-WTF/">Flask扩展——Flask-WTF</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/16/Flask扩展——Flask-Moment/">Flask扩展——Flask-Moment</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/13/linux命令——tar/">linux命令——tar</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/03/pip升级所有包/">pip升级所有包</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/01/27/Kcptun配置/">Kcptun配置</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/12/03/在powershell中校验文件Hash/">在powershell中校验文件Hash</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/11/15/scrapy安装的坑/">scrapy安装的坑</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/10/Windows中删除路径太长目录及文件/">Windows中删除路径太长目录及文件</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/01/使用shadowsocks代理UWP应用/">使用shadowsocks代理UWP应用</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/11/VPS上部署Shadowsocks-锐速/">VPS上部署Shadowsocks & 锐速</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/07/22/查看占用端口的进程并终止/">查看占用端口的进程并终止</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/07/22/IntelliJ-IDEA-14集成Tomcat/">IntelliJ IDEA14集成Tomcat</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/29/Hello-Hexo/">Hello Hexo</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2015-2018 Double X Li
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题  v3.5">Yelee</a> by MOxFIVE <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" title="本站到访数"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>| </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit"  title="本页阅读量"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>
